@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pet_shelter_administation_adoption</string>
+    <string-array name="role_array">
+        <item>Future Parents</item>
+        <item>Pet Guardians</item>
+    </string-array>
+</resources>

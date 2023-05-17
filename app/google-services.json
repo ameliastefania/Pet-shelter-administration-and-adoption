@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "388534930712",
+    "project_id": "pet-shelter-administration",
+    "storage_bucket": "pet-shelter-administration.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388534930712:android:881170f59333916b70e26d",
+        "android_client_info": {
+          "package_name": "com.example.pet_shelter_administation_adoption"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "388534930712-37b2q9tadensfgm6v0n13s4q89l0tcfv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pet_shelter_administation_adoption",
+            "certificate_hash": "e8f7092c027d3d2aac97ddce75bd052f979db754"
+          }
+        },
+        {
+          "client_id": "388534930712-7hlq2nd0jl070u4i7i80gu44emmjso70.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJH8rB4S7Wacp85Cb_cHjiNVIZkTZnzfc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "388534930712-7hlq2nd0jl070u4i7i80gu44emmjso70.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
