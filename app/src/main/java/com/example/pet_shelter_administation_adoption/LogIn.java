@@ -1,8 +1,5 @@
 package com.example.pet_shelter_administation_adoption;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -74,7 +74,7 @@ public class LogIn extends AppCompatActivity {
         if (auth.getCurrentUser() != null) {
             /*TO DO
             * check for user role from your collection => query */
-            startActivity(new Intent(LogIn.this, AdminMainPage.class));
+            startActivity(new Intent(LogIn.this, ClientMainActivity.class));
         }
     }
 
