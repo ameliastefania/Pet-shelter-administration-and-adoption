@@ -5,4 +5,8 @@
         <item>Future Parents</item>
         <item>Pet Guardians</item>
     </string-array>
+    <string-array name="kind_array">
+        <item>Cat</item>
+        <item>Dog</item>
+    </string-array>
 </resources>

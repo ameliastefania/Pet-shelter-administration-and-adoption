@@ -74,7 +74,7 @@ public class LogIn extends AppCompatActivity {
         if (auth.getCurrentUser() != null) {
             /*TO DO
             * check for user role from your collection => query */
-            startActivity(new Intent(LogIn.this, ClientMainActivity.class));
+            startActivity(new Intent(LogIn.this, AdminMainPage.class));
         }
     }
 

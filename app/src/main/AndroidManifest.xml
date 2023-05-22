@@ -12,6 +12,9 @@
         android:theme="@style/Theme.Pet_shelter_administation_adoption"
         tools:targetApi="31">
         <activity
+            android:name=".AdminMainPage"
+            android:exported="false" />
+        <activity
             android:name=".ClientMainActivity"
             android:exported="false" />
         <activity
