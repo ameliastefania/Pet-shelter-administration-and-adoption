@@ -1,13 +1,7 @@
 package com.example.pet_shelter_administation_adoption;
 
-import static android.content.ContentValues.TAG;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.TestLooperManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,30 +12,26 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -60,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     String userRole = null;
 
     User objUser = new User();
+    List<User> usersList = new ArrayList<>();
 
 
     @Override
@@ -109,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                     userEmail = FBuser.getEmail();
                                     String userId = FBuser.getUid();
                                     objUser = new User(userId,userEmail,userPass,userRole);
+                                    usersList.add(objUser);
                                     usersCollection.document(userId).set(objUser);
                                 }
                             }
@@ -142,7 +134,30 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
          */
 
         if (mAuth.getCurrentUser() != null) {
-            Toast.makeText(this,"User already logged in",Toast.LENGTH_LONG).show();
+            String adrMail = mAuth.getCurrentUser().getEmail();
+            String userId = mAuth.getCurrentUser().getUid();
+            String role = null;
+
+            usersCollection.document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                   if (documentSnapshot.get("role").toString().equals("Future Parents")) {
+                       Toast.makeText(MainActivity.this,"rol from maina activ: "+ documentSnapshot.get("role").toString(),Toast.LENGTH_LONG).show();
+                       startActivity(new Intent(MainActivity.this, ClientMainActivity.class));
+                   } else {
+                       Toast.makeText(MainActivity.this,"rol from main activ: "+ documentSnapshot.get("role").toString(),Toast.LENGTH_LONG).show();
+                       startActivity(new Intent(MainActivity.this, AdminMainPage.class));
+                   }
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this,"N-A MERS",Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+            //Toast.makeText(this,"User already logged in",Toast.LENGTH_LONG).show();
         }
     }
 

@@ -1,16 +1,45 @@
 package com.example.pet_shelter_administation_adoption;
 
+import java.util.Map;
+
 public class Pet {
-    String petName = "Anonymous pet" ;
+    String petName = "none";
     String petDescription = "none";
     String petKind = "none";
-    int petAge = 0;
+    int petAge =0;
     String petBreed = "none";
-    Boolean isVaccinated = false;
-    String imgURL;
+    Boolean isVaccinated = Boolean.TRUE;
+    String imgURL = "none";
+
+    Map<String, Object> myMap;
+
+    public Pet (Map myMap) {
+        this.imgURL = myMap.get("imgURL").toString();
+        this.petName = myMap.get("petName").toString();
+        this.petDescription = myMap.get("petDescription").toString();
+        this.petKind = myMap.get("petKind").toString();
+        this.petBreed = myMap.get("petBreed").toString();
+        this.petAge = Integer.parseInt(myMap.get("petAge").toString());
+        this.isVaccinated = Boolean.parseBoolean(myMap.get("petDescription").toString());
+    }
+
+    @Override
+    public String toString() {
+        return "Pet{" +
+                "petName='" + petName + '\'' +
+                ", petDescription='" + petDescription + '\'' +
+                ", petKind='" + petKind + '\'' +
+                ", petAge=" + petAge +
+                ", petBreed='" + petBreed + '\'' +
+                ", isVaccinated=" + isVaccinated +
+                ", imgURL='" + imgURL + '\'' +
+                ", myMap=" + myMap +
+                '}';
+    }
 
     public Pet(String petName, String petDescription, String petKind, int petAge, String petBreed, Boolean isVaccinated, String imgURL) {
 
+        this.imgURL = imgURL;
         if (petName.trim().equals("")) {
             petName = "Anonymous pet";
         } else {
@@ -36,8 +65,6 @@ public class Pet {
             this.petBreed = petBreed;
         }
         this.isVaccinated = isVaccinated;
-        this.imgURL = imgURL;
-
     }
 
     public String getPetDescription() {
@@ -94,8 +121,6 @@ public class Pet {
     }
 
     public Pet() {
-        petName = "Anonymous pet";
-        imgURL = null;
     }
 
     public String getPetName() {

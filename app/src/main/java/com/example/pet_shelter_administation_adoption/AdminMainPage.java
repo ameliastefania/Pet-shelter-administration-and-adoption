@@ -20,8 +20,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -56,6 +60,8 @@ public class AdminMainPage extends AppCompatActivity implements AdapterView.OnIt
 
     private StorageTask mUploadTask;
     public enum petKindEnum {Cat, Dog};
+    String myNiceURL;
+    Pet petObj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,16 @@ public class AdminMainPage extends AppCompatActivity implements AdapterView.OnIt
         Button btnIncrementAge = (Button) findViewById(R.id.btnIncrementAge);
         Button btnDecrementAge = (Button) findViewById(R.id.btnDecrementAge);
         EditText etPetAge = (EditText) findViewById(R.id.etPetAge);
+
+        Button btnSignOutAdmin = (Button) findViewById(R.id.btnSignOutAdmin);
+        btnSignOutAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Toast.makeText(AdminMainPage.this, "Successfully sign out", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(AdminMainPage.this, LogIn.class));
+            }
+        });
 
         btnIncrementAge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +125,7 @@ public class AdminMainPage extends AppCompatActivity implements AdapterView.OnIt
 
 
         storageRef = FirebaseStorage.getInstance().getReference("uploads"); /*uploads is the name directory where the pics shall be stored*/
-        petCollection = firestore.collection("pets");
+        petCollection = firestore.collection("myPets");
 
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,8 +165,10 @@ public class AdminMainPage extends AppCompatActivity implements AdapterView.OnIt
             * in this way, we shall store the images independently
             * to avoid overwriting them in the firebase
             * */
+
             StorageReference fileRef = storageRef.child(System.currentTimeMillis() + "." + getFileExtension(imgURI));
-            mUploadTask = fileRef.putFile(imgURI)
+
+            fileRef.putFile(imgURI)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -163,21 +181,23 @@ public class AdminMainPage extends AppCompatActivity implements AdapterView.OnIt
                             }, 500);
 
                             Toast.makeText(AdminMainPage.this, "Upload successfully", Toast.LENGTH_LONG).show();
-                            petName = etPetName.getText().toString();
-                            petDescription = etPetDescription.getText().toString();
-                            petKind = spKind.getSelectedItem().toString();
-                            petAge = ageValues[0];
-                            petBreed = etPetBreed.getText().toString();
 
-                            Boolean rbChecked = rbIsVaccinated.isChecked();
-                            if (rbChecked) {
-                                isVaccinated = Boolean.TRUE;
-                            } else {
-                                isVaccinated = Boolean.FALSE;
-                            }
+//                            Task<Uri> downloadUri = taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                @Override
+//                                public void onSuccess(Uri uri) {
+//                                    myNiceURL = uri.toString();
+//                                }
+//                            })
+//
+//                                    .addOnFailureListener(new OnFailureListener() {
+//                                        @Override
+//                                        public void onFailure(@NonNull Exception e) {
+//                                            myNiceURL = "pula";
+//                                        }
+//                                    });
 
-                            Pet petObj = new Pet(petName,petDescription,petKind,petAge,petBreed,isVaccinated,taskSnapshot.getUploadSessionUri().toString());
-                            petCollection.document().set(petObj);
+                           // myNiceURL = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+                            //myNiceURL = taskSnapshot.getStorage().getDownloadUrl().getResult().toString();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -192,10 +212,81 @@ public class AdminMainPage extends AppCompatActivity implements AdapterView.OnIt
                             double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
                             pbUploadImg.setProgress((int) progress);
                         }
+                    })
+                    .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        @Override
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
+                            return fileRef.getDownloadUrl();
+                        }
+                    })
+                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                Uri downloadUri = task.getResult();
+                                String pula = downloadUri.toString();
+
+                                //Toast.makeText(AdminMainPage.this, "my nice url: " + myNiceURL,Toast.LENGTH_LONG).show();
+
+                                petName = etPetName.getText().toString();
+                                petDescription = etPetDescription.getText().toString();
+                                petKind = spKind.getSelectedItem().toString();
+                                petAge = ageValues[0];
+                                petBreed = etPetBreed.getText().toString();
+
+                                Boolean rbChecked = rbIsVaccinated.isChecked();
+                                if (rbChecked) {
+                                    isVaccinated = Boolean.TRUE;
+                                } else {
+                                    isVaccinated = Boolean.FALSE;
+                                }
+
+
+
+                                petObj = new Pet(petName,petDescription,petKind,petAge,petBreed,isVaccinated, pula.toString());
+                                //Toast.makeText(AdminMainPage.this, "GET: " + petObj.getImgURL(), Toast.LENGTH_LONG).show();
+                                //Toast.makeText(AdminMainPage.this, "GET direct pe var: " + petObj.imgURL, Toast.LENGTH_LONG).show();
+                                petCollection.document().set(petObj);
+                            } else {
+                                Toast.makeText(AdminMainPage.this, "nu merge",Toast.LENGTH_LONG).show();
+                            }
+                        }
                     });
         } else {
             Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
+
+
+//        mUploadTask.continueWithTask(new Continuation() {
+//            @Override
+//            public Object then(@NonNull Task task) throws Exception {
+//                myNiceURL = task.getResult().toString();
+//                return  myNiceURL;
+//            }
+//        })
+//                .addOnSuccessListener(new OnSuccessListener() {
+//                    @Override
+//                    public void onSuccess(Object o) {
+//
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//
+//                    }
+//                })
+//                .addOnCompleteListener(new OnCompleteListener() {
+//                    @Override
+//                    public void onComplete(@NonNull Task task) {
+//
+//                    }
+//                });
+
+
     }
 
     @Override

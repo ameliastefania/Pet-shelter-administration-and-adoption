@@ -9,4 +9,7 @@
         <item>Cat</item>
         <item>Dog</item>
     </string-array>
+    //Headings
+    <string name="cat">Mister Fluffy</string>
+    <string name="dog">Macho</string>
 </resources>

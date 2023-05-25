@@ -49,5 +49,13 @@
         android:id="@+id/btnLogIn"
         />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Or you can Register by clicking here"
+        android:id="@+id/tvRegisterFromLogIn"
+        android:onClick="onClick"
+        android:clickable="true"/>
+
 
 </LinearLayout>
